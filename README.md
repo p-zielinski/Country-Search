@@ -1,7 +1,7 @@
 <b>Please download everything and use command `npm install` to download node_modules files.
 After that `npm run start` is reasonable.</b>
 
-Result on the video: https://www.youtube.com/watch?v=gcCm_FoWH5k
+Result on the video: https://youtu.be/H-hbECOAYkk
 
 Created by Piotr Zieliński
 
