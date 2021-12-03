@@ -1,6 +1,7 @@
 import { Button } from "../styled";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelected } from "../store/actions/countriesActions";
+import parse from "html-react-parser";
 
 const SingleCountryPage = () => {
   const { lastRequest, selectedData } = useSelector((state) => state.countries);
@@ -9,44 +10,54 @@ const SingleCountryPage = () => {
   return (
     <div>
       <Button onClick={() => dispatch(setSelected(false))}>Wróć</Button>
-      <p>
-        {selectedData.name.toLowerCase().includes(lastRequest)
-          ? selectedData.name
-          : selectedData.altSpellings.filter((name) =>
-              name.toLowerCase().includes(lastRequest.toLowerCase())
-            ).length > 0
-          ? selectedData.name +
-            " (" +
-            selectedData.altSpellings.filter((name) =>
-              name.toLowerCase().includes(lastRequest.toLowerCase())
-            ) +
-            ")"
-          : selectedData.name}
+      <p style={{ marginBottom: 10 }}>
+        Nazwa Państwa:
         <br />
-        Region: {selectedData.region}
-        <br />
-        {selectedData.topLevelDomain.length > 0 && (
+        {selectedData.name.official.toLowerCase().includes(lastRequest) ? (
+          selectedData.name.official
+        ) : (
           <>
-            Domen{selectedData.topLevelDomain.length > 1 ? "y" : "a"}{" "}
-            najwyższego poziomu: {selectedData.topLevelDomain.join(", ")}
-          </>
-        )}
-        <br />
-        {selectedData.callingCodes.length > 0 && (
-          <>
-            Telefoniczn{selectedData.callingCodes.length > 1 ? "e" : "y"} kod
-            kraju: {selectedData.callingCodes.map((e) => `+${e}`).join(", ")}
-          </>
-        )}
-        <br />
-        {selectedData.altSpellings.length > 0 && (
-          <>
-            Znany również jako:
-            <br />
-            {selectedData.altSpellings.join(", ")}
+            {selectedData.altSpellings.find((e) =>
+              e.toLowerCase().includes(lastRequest)
+            )
+              ? `${
+                  selectedData.name.official
+                } (${selectedData.altSpellings.find((e) =>
+                  e.toLowerCase().includes(lastRequest)
+                )})`
+              : selectedData.name.official}
           </>
         )}
       </p>
+      {selectedData.capital && (
+        <p style={{ marginBottom: 10 }}>
+          Stolic{selectedData.capital.length > 1 ? "e" : "a"}:
+          <br />
+          {selectedData.capital.join(", ")}
+        </p>
+      )}
+      {selectedData.currencies && (
+        <>
+          {Object.entries(selectedData.currencies).length > 0 && (
+            <p style={{ marginBottom: 10 }}>
+              Walut
+              {Object.entries(selectedData.currencies).length === 1
+                ? "a"
+                : "y"}{" "}
+              (Kod - Nazwa - Symbol) :
+              <br />
+              {Object.entries(selectedData.currencies).map((currency) =>
+                parse(`${currency[0]}
+              -
+              ${currency[1].name}
+              -
+              ${currency[1].symbol}
+              <br />`)
+              )}
+            </p>
+          )}
+        </>
+      )}
     </div>
   );
 };

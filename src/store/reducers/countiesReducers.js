@@ -1,6 +1,3 @@
-// import { united } from "./unitedData";//nie usuwam by pokazać jak pracowałem w produkcji, pobrałem dane raz i zapisałem na dysku
-// import { aData } from "./aData";
-
 const initState = {
   requests: [], //[["united",united],["a",aData]],
   lastRequest: "",

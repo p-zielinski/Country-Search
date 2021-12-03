@@ -15,8 +15,6 @@ import { setListOfCountries } from "../store/actions/countriesActions";
 import SingleCountryPage from "./SingleCountryPage";
 import { Button } from "../styled";
 
-const API_KEY = "507e208528758164f9cc675e34e75b97";
-
 const Home = () => {
   const {
     requests,
@@ -33,17 +31,21 @@ const Home = () => {
 
   useEffect(async () => {
     if (requests.length === 0) await handleSearch();
-  });
+  }, []);
 
   useEffect(() => {
-    if (requests.length > 0) {
-      let countries = requests.filter(
+    if (requests.length > 0 && lastRequest !== "") {
+      let countries = requests.find(
         (e) => e[0].toLowerCase() === lastRequest.toLowerCase()
-      )[0][1];
+      )[1];
       if (aToZ) {
-        countries = countries.sort((a, b) => a.name.localeCompare(b.name));
+        countries = countries.sort((a, b) =>
+          a.name.official.localeCompare(b.name.official)
+        );
       } else {
-        countries = countries.sort((a, b) => b.name.localeCompare(a.name));
+        countries = countries.sort((a, b) =>
+          b.name.official.localeCompare(a.name.official)
+        );
       }
       dispatch(setPageNumber(0));
       dispatch(setListOfCountries(countries));
@@ -59,7 +61,7 @@ const Home = () => {
         setLoading(true);
         const data = await axios({
           method: "get",
-          url: `http://api.countrylayer.com/v2/name/${inputSearch}?access_key=${API_KEY}`,
+          url: `https://restcountries.com/v3.1/name/${inputSearch}`,
           timeout: 1000 * 5, // Wait for 5 seconds
           headers: {
             "Content-Type": "application/json",
@@ -123,7 +125,7 @@ const Home = () => {
                       <p>Strona:</p>
                       <InputNumber
                         min={0}
-                        max={Math.round(listOfCountries.length / 20)}
+                        max={Math.floor(listOfCountries.length / 20)}
                         style={{ margin: "0 16px" }}
                         value={pageNumber}
                         onChange={(e) => dispatch(setPageNumber(e))}
@@ -131,7 +133,7 @@ const Home = () => {
                       <Slider
                         style={{ width: "100%" }}
                         min={0}
-                        max={Math.round(listOfCountries.length / 20)}
+                        max={Math.floor(listOfCountries.length / 20)}
                         value={pageNumber}
                         onChange={(e) => dispatch(setPageNumber(e))}
                       />
@@ -147,11 +149,11 @@ const Home = () => {
                           )[0][1];
                           if (!aToZ) {
                             countries = countries.sort((a, b) =>
-                              a.name.localeCompare(b.name)
+                              a.name.official.localeCompare(b.name.official)
                             );
                           } else {
                             countries = countries.sort((a, b) =>
-                              b.name.localeCompare(a.name)
+                              b.name.official.localeCompare(a.name.official)
                             );
                           }
                           dispatch(setListOfCountries(countries));
@@ -172,22 +174,23 @@ const Home = () => {
                                 dispatch(setSelected(true));
                               }}
                             >
-                              {country.name.toLowerCase().includes(lastRequest)
-                                ? country.name
-                                : country.altSpellings.filter((name) =>
-                                    name
-                                      .toLowerCase()
-                                      .includes(lastRequest.toLowerCase())
-                                  ).length > 0
-                                ? country.name +
-                                  " (" +
-                                  country.altSpellings.filter((name) =>
-                                    name
-                                      .toLowerCase()
-                                      .includes(lastRequest.toLowerCase())
-                                  ) +
-                                  ")"
-                                : country.name}
+                              {country.name.official
+                                .toLowerCase()
+                                .includes(lastRequest) ? (
+                                country.name.official
+                              ) : (
+                                <>
+                                  {country.altSpellings.find((e) =>
+                                    e.toLowerCase().includes(lastRequest)
+                                  )
+                                    ? `${
+                                        country.name.official
+                                      } (${country.altSpellings.find((e) =>
+                                        e.toLowerCase().includes(lastRequest)
+                                      )})`
+                                    : country.name.official}
+                                </>
+                              )}
                             </Button>
                           );
                         }
@@ -204,7 +207,7 @@ const Home = () => {
           )}
         </>
       ) : (
-        <SingleCountryPage key={selectedData.name} />
+        <SingleCountryPage key={selectedData.name.official} />
       )}
     </>
   );
