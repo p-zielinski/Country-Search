@@ -1,6 +1,10 @@
 <b>Please download everything and use command `npm install` to download node_modules files.
 After that `npm run start` is reasonable.</b>
 
+Result on the video: https://www.youtube.com/watch?v=gcCm_FoWH5k
+
+Created by Piotr Zieliński
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
