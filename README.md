@@ -1,4 +1,4 @@
-<b>Please download everthing and use command `npm install` to download node_modules files.
+<b>Please download everything and use command `npm install` to download node_modules files.
 After that `npm run start` is reasonable.</b>
 
 # Getting Started with Create React App
